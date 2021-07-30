@@ -4,7 +4,7 @@
   "description": "A simple project on Node Js consuming Daraja API",
   "main": "index.js",
   "scripts": {
-    "app": "nodemon app.js"
+    "start": "node karis.js"
   },
   "keywords": [
     "m-pesa",

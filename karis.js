@@ -12,7 +12,7 @@ app.get('/',access, (req, res) => {
     let date = new Date()
     let timestamp = date.getDate() + "" + "" + date.getMonth() + "" + "" + date.getFullYear() + "" + "" + date.getHours() + "" + "" + date.getMinutes() + "" + "" + date.getSeconds()
 
-    res.status(200).json({ message: "We're up and running. Happy Coding", time: new Buffer.from(timestamp).toString('base64'), token:  req.access_token })
+    res.status(200).json({ message: "We're up and running. Happy Coding", time: new Buffer.from(timestamp).toString('base64')
 })
 
 app.get('/access_token', access, (req, res) => {
@@ -163,9 +163,7 @@ function access_token() {
     )
 }
 
-app.listen(8000, (err, live) => {
-    if (err) {
-        console.error(err)
-    }
-    console.log("Server running on port 8000")
+app.listen(process.env.PORT || 8000, (err, live) => {
+
+    console.log("Server running on port " + 8000)
 });
