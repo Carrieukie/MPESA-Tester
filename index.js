@@ -94,6 +94,7 @@ app.get('/simulate', access, (req, res) => {
             method: "POST",
             headers: {
                 "Authorization": auth
+                
             },
             json: {
                 "ShortCode": "174379",
