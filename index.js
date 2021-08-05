@@ -37,8 +37,8 @@ app.get('/register', access, (req, resp) => {
             json: {
                 "ShortCode": "174379",
                 "ResponseType": "Complete",
-                "ConfirmationURL": "https://fast-dusk-69031.herokuapp.com/confirmation",
-                "ValidationURL": "https://fast-dusk-69031.herokuapp.com/validation"
+                "ConfirmationURL": "https://evening-citadel-52688.herokuapp.com/confirm",
+                "ValidationURL": "https://evening-citadel-52688.herokuapp.com/validate"
             }
         },
         function (error, response, body) {
@@ -53,24 +53,27 @@ app.get('/status', access, (req, resp) => {
     let url = "https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query"
     let auth = "Bearer " + req.access_token
 
+    console.log(auth)
     request(
         {
             url: url,
             method: "POST",
             headers: {  
-                "Authorization": auth
+                "Authorization": auth,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
             json: {
-                "Initiator": "testapi",
-                "SecurityCredential":  "Of8b7CoOKdJ14C/q5miLDMJ41Hufgvlp+DzEzRfre7HU4UGshq3JbyEgNIcdVEI46ZLhgzQtImqKC4m9bA03GD8Ni2Qc5yF11DGxoGTI/3eZCPbT3uX1bECw5JtUkPo4EnG8ckZwQnuNdAcaGfF1Mgx8GXpI7qEyO8/zkBkJlzmvq/zWDK1F7KGh2dKHJVeUSFS54QpcwcZGz8SEp3M2EOCluuf3fmYvJC2XVyLdOuKLp/5PNiR2c0LlYC0i2swhiqpOztZjlfM2EoPbUJCw2gebpE43FouXCRQzEdJUxF9R+72oeMN32zWh5XxEiRjHDJEbGBIcI/Bda7x9r0bafg==",
+                "Initiator": "testpi",
+                "SecurityCredential": "NU/yXioiKxPSy0xi0GeL7ptNlsLb9CdBLrHKWElBEU1dXl1DeNgqOghBQXqgsZm7+Z1E9REQCT+Wn+Iv7OlcB6aH3coakFfgWFo54wztdbcb5LiLXWYCG63PinrE46Huo8pUiU5tm7T03E0mFikCvJ5C7XCkpwI3vogdtCxOrI0bgBFq8/iWxzSBrvqDAJKn2ZR8Q8V8zhxwt61dgAGBKzHfE6q+Nu1dQ4JdesEdraId+w4HMCr3WmZRulBMg7l/lAeX8icVmDYeQwZyXeM47isGaVgExLvrmT6yFfkFFDNrDEYJ9vYVA7Rtakv4tTd930VcZReQA2Ic9TFLTpbqCQ==",
                 "CommandID": "TransactionStatusQuery",
                 "TransactionID": "OEI2AK4Q16",
-                "PartyA": 600988,
+                "PartyA": 600997,
                 "IdentifierType": 4,
-                "ResultURL": "https://fast-dusk-69031.herokuapp.com/status",
-                "QueueTimeOutURL": "https://fast-dusk-69031.herokuapp.com/status",
-                "Remarks": "k",
-                "Occassion": "kno",
+                "ResultURL": "https://evening-citadel-52688.herokuapp.com/status",
+                "QueueTimeOutURL": "https://mydomain.com/TransactionStatus/queue/",
+                "Remarks": "Remarks",
+                "Occassion": "Testing",
               }
         },
         function (error, response, body) {
@@ -112,12 +115,89 @@ app.get('/simulate', access, (req, res) => {
     )
 })
 
+app.get('/b2c', access, (req, res) => {
+    const url = 'https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest',
+        auth = 'Bearer ' + req.access_token
+        const timestamp = getTimestamp()
+        const password = new Buffer.from('174379' + 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' + timestamp).toString('base64')
+
+
+    request({
+        method: "POST",
+        url: url,
+        headers: {
+            "Authorization": auth
+        },
+        json: {
+            "InitiatorName": "testapi",
+            "SecurityCredential": password,
+            "CommandID": "SalaryPayment",
+            "Amount": "200",
+            "PartyA": "600998",
+            "PartyB": "254708374149",
+            "Remarks": "please pay",
+            "QueueTimeOutURL": "https://evening-citadel-52688.herokuapp.com/b2c_timeout_url",
+            "ResultURL": "https://evening-citadel-52688.herokuapp.com/b2c_result_url",
+            "Occasion": "endmonth"
+        }
+    },
+        function (error, response, body) {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                res.status(200).json(body)
+            }
+        }
+    )
+})
+
+app.get('/stk', access, (req, res) => {
+    const url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+    auth = "Bearer " + req.access_token
+
+    const timestamp = getTimestamp()
+    const password = new Buffer.from('174379' + 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' + timestamp).toString('base64')
+
+    request(
+        {
+            url: url,
+            method: "POST",
+            headers: {
+                "Authorization": auth
+            },
+            json: {
+                "BusinessShortCode": "174379",
+                "Password": password,
+                "Timestamp": timestamp,
+                "TransactionType": "CustomerPayBillOnline",
+                "Amount": "1",
+                "PartyA": "25410102720",
+                "PartyB": "174379",
+                "PhoneNumber": "254710102720",
+                "CallBackURL": "https://evening-citadel-52688.herokuapp.com/stk_callback",
+                "AccountReference": "Test",
+                "TransactionDesc": "TestPay"
+            }
+        },
+        function (error, response, body) {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                res.status(200).json(body)
+            }
+        }
+    )
+})
+
+
 //This middleware supplies a token to each endpoint
 function access(req, res, next) {
     // access token
     let url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
     //Use your credentials here, I removed them since its going to be a public repo on github
-    let auth = new Buffer.from("Pass in (consumerkey:consumersecret)").toString('base64');
+    let auth = new Buffer.from("WnNLFu3BDxfegRAzlLr47UtZXCZhQwYy:McjTm00sgxWKFdPs").toString('base64');
 
     request(
         {
@@ -145,7 +225,7 @@ function access_token() {
     let url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
     
     //Use your credentials here, I removed them since its going to be a public repo on github
-    let auth = new Buffer.from("Pass in (consumerkey:consumersecret)").toString('base64');
+    let auth = new Buffer.from("WnNLFu3BDxfegRAzlLr47UtZXCZhQwYy:McjTm00sgxWKFdPs").toString('base64');
 
     request(
         {
@@ -172,3 +252,26 @@ app.listen(port, (err, live) => {
     console.log("Server running on port " + port)
     
 });
+
+function getTimestamp(){
+
+    const date = new Date();
+    //const date = new Date(2018, 7, 24, 10, 33, 30, 0);
+
+    var  day = date.getDate();
+    var year = date.getFullYear()
+    var month = date.getMonth()+1;
+
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+    var seconds  = date.getSeconds();
+
+     var dayString = day<=9?"0"+day:day;
+     var monthString = month<=9?"0"+month:month;
+    var hourString = hour<=9?"0"+hour:hour;
+    var minuteString = minute<=9?"0"+minute:minute;
+    var secondsString = seconds<=9?"0"+seconds:seconds;
+
+    var value = year+monthString+dayString+hourString+minuteString+secondsString;
+    return value
+}
